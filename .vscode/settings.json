@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^cd github-login-mvp && npm install$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
