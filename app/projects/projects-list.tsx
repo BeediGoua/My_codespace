@@ -40,7 +40,7 @@ export default function ProjectsList({ repos }: ProjectsListProps) {
     );
 
     return (
-        <section style={{ marginTop: "1rem" }}>
+        <section style={{ marginTop: "18px" }}>
             <ProjectsFilters
                 query={query}
                 visibility={visibility}

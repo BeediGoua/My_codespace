@@ -2,6 +2,9 @@ export type GitHubUser = {
     login: string;
     name: string | null;
     html_url: string;
+    avatar_url: string;
+    public_repos: number;
+    followers: number;
 };
 
 export type GitHubRepo = {

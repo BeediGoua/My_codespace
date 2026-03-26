@@ -6,16 +6,37 @@ type ProjectsItemsProps = {
 
 export default function ProjectsItems({ repos }: ProjectsItemsProps) {
     return (
-        <ul style={{ marginTop: "0.6rem", paddingLeft: "1.25rem" }}>
+        <ul className="repo-grid">
             {repos.map((repo) => (
-                <li key={repo.id} style={{ marginBottom: "0.9rem" }}>
-                    <a href={repo.html_url} target="_blank" rel="noreferrer">
-                        {repo.full_name}
-                    </a>
-                    <div style={{ fontSize: "0.9rem", color: "#555" }}>
-                        {repo.private ? "Prive" : "Public"} - {repo.fork ? "Fork" : "Source"} - MAJ: {new Date(repo.updated_at).toLocaleString("fr-FR")}
+                <li key={repo.id} className="repo-card">
+                    <div className="repo-card-head">
+                        <div>
+                            <h3 className="repo-title">
+                                <a href={repo.html_url} target="_blank" rel="noreferrer" className="repo-link">
+                                    {repo.full_name}
+                                </a>
+                            </h3>
+                            <div className="repo-meta">MAJ: {new Date(repo.updated_at).toLocaleString("fr-FR")}</div>
+                        </div>
+
+                        <div className="repo-badges">
+                            <span className={`badge ${repo.private ? "badge-private" : "badge-public"}`}>
+                                {repo.private ? "Prive" : "Public"}
+                            </span>
+                            <span className={`badge ${repo.fork ? "badge-fork" : "badge-source"}`}>
+                                {repo.fork ? "Fork" : "Source"}
+                            </span>
+                        </div>
                     </div>
-                    {repo.description ? <div style={{ fontSize: "0.95rem" }}>{repo.description}</div> : null}
+
+                    <p className="repo-description">{repo.description || "Aucune description fournie pour ce repository."}</p>
+
+                    <div className="repo-card-footer">
+                        <span className="toolbar-note">Pret pour une action future: ouverture, creation rapide, Codespaces.</span>
+                        <a href={repo.html_url} target="_blank" rel="noreferrer" className="button-secondary">
+                            Ouvrir sur GitHub
+                        </a>
+                    </div>
                 </li>
             ))}
         </ul>
