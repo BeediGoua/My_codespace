@@ -33,6 +33,9 @@ export default async function ProjectsPage() {
                 </div>
 
                 <div className="page-header-actions">
+                    <Link href="/projects/create" className="button-primary">
+                        + Nouveau projet
+                    </Link>
                     <Link href="/dashboard" className="button-secondary">
                         Retour dashboard
                     </Link>
