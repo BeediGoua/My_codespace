@@ -54,10 +54,10 @@ export default function CreateProjectPage() {
             </section>
 
             <section className="section-card" style={{ maxWidth: 480, margin: "0 auto" }}>
-                <h2 className="section-title">Formulaire de creation</h2>
-                <form onSubmit={handleSubmit}>
+                <h2 className="section-title">Formulaire de création</h2>
+                <form onSubmit={handleSubmit} className="form-shell">
                     <div className="form-group">
-                        <label htmlFor="repo-name">Nom du repository</label>
+                        <label htmlFor="repo-name" className="form-label">Nom du repository</label>
                         <input
                             id="repo-name"
                             name="repo-name"
@@ -72,7 +72,7 @@ export default function CreateProjectPage() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="repo-desc">Description (optionnel)</label>
+                        <label htmlFor="repo-desc" className="form-label">Description (optionnel)</label>
                         <input
                             id="repo-desc"
                             name="repo-desc"
@@ -86,7 +86,7 @@ export default function CreateProjectPage() {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="repo-type">Type de projet</label>
+                        <label htmlFor="repo-type" className="form-label">Type de projet</label>
                         <select
                             id="repo-type"
                             name="repo-type"
@@ -102,23 +102,24 @@ export default function CreateProjectPage() {
                     </div>
 
                     <div className="form-group">
-                        <label>
+                        <label className="form-label">
                             <input
                                 type="checkbox"
                                 name="private"
                                 checked={privateRepo}
                                 onChange={e => setPrivateRepo(e.target.checked)}
                                 disabled={loading}
-                            /> Rendre le repository prive
+                                style={{ marginRight: 8 }}
+                            /> Rendre le repository privé
                         </label>
                     </div>
 
                     <button type="submit" className="button-primary" style={{ marginTop: 16 }} disabled={loading}>
-                        {loading ? "Creation..." : "Creer le projet"}
+                        {loading ? "Création..." : "Créer le projet"}
                     </button>
                 </form>
                 {error && <div className="form-error" style={{ marginTop: 12 }}>{error}</div>}
-                {success && <div className="form-success" style={{ marginTop: 12 }}>Repository cree ! Redirection...</div>}
+                {success && <div className="form-success" style={{ marginTop: 12 }}>Repository créé ! Redirection...</div>}
             </section>
         </main>
     );

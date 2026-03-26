@@ -1,3 +1,52 @@
+/* ---- Form Styles ---- */
+.form-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-label {
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.form-input {
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.95);
+  font-size: 1rem;
+  color: var(--text);
+  transition: border 0.18s;
+}
+.form-input:focus {
+  outline: 2px solid var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.form-error {
+  color: #b91c1c;
+  background: var(--danger-soft);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.98rem;
+}
+
+.form-success {
+  color: #166534;
+  background: var(--success-soft);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.98rem;
+}
 :root {
   --bg: #f6f2ea;
   --bg-accent: #efe7da;

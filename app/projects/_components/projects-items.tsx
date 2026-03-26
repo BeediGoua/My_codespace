@@ -1,44 +1,73 @@
-import type { GitHubRepo } from "@/lib/github";
+"use client";
+import React from "react";
 
-type ProjectsItemsProps = {
-    repos: GitHubRepo[];
-};
+export type ProjectItemProps = {
+                    <div className="project-meta">
+    import React from "react";
 
-export default function ProjectsItems({ repos }: ProjectsItemsProps) {
-    return (
-        <ul className="repo-grid">
-            {repos.map((repo) => (
-                <li key={repo.id} className="repo-card">
-                    <div className="repo-card-head">
-                        <div>
-                            <h3 className="repo-title">
-                                <a href={repo.html_url} target="_blank" rel="noreferrer" className="repo-link">
-                                    {repo.full_name}
-                                </a>
-                            </h3>
-                            <div className="repo-meta">MAJ: {new Date(repo.updated_at).toLocaleString("fr-FR")}</div>
-                        </div>
+    export type ProjectItemProps = {
+        id: number | string;
+        name: string;
+        full_name?: string;
+        description?: string | null;
+        html_url: string;
+        private: boolean;
+        language?: string;
+        updated_at: string;
+    };
 
-                        <div className="repo-badges">
-                            <span className={`badge ${repo.private ? "badge-private" : "badge-public"}`}>
-                                {repo.private ? "Prive" : "Public"}
-                            </span>
-                            <span className={`badge ${repo.fork ? "badge-fork" : "badge-source"}`}>
-                                {repo.fork ? "Fork" : "Source"}
-                            </span>
-                        </div>
-                    </div>
-
-                    <p className="repo-description">{repo.description || "Aucune description fournie pour ce repository."}</p>
-
-                    <div className="repo-card-footer">
-                        <span className="toolbar-note">Pret pour une action future: ouverture, creation rapide, Codespaces.</span>
-                        <a href={repo.html_url} target="_blank" rel="noreferrer" className="button-secondary">
-                            Ouvrir sur GitHub
-                        </a>
-                    </div>
-                </li>
-            ))}
-        </ul>
-    );
-}
+    export function ProjectsItems({ projects }: { projects: ProjectItemProps[] }) {
+        return (
+            <ul className="repo-grid">
+                {projects.map((project) => {
+                    // Fallback for Codespaces URL if not present
+                    const codespacesUrl = project.full_name
+                        ? `https://github.com/codespaces/new?repo=${project.full_name}`
+                        : project.html_url.replace('github.com/', 'github.com/codespaces/new?repo=');
+                    return (
+                        <li key={project.id} className="repo-card">
+                            <div className="repo-card-head">
+                                <div>
+                                    <h3 className="repo-title">{project.name}</h3>
+                                </div>
+                                <div style={{ display: 'flex', gap: 8 }}>
+                                    <a
+                                        href={project.html_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="button-secondary"
+                                        title="Voir sur GitHub"
+                                    >
+                                        <span role="img" aria-label="GitHub">🔗</span> GitHub
+                                    </a>
+                                    <a
+                                        href={codespacesUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="button-primary"
+                                        title="Ouvrir dans Codespaces"
+                                    >
+                                        <span role="img" aria-label="Codespaces">🟢</span> Codespaces
+                                    </a>
+                                </div>
+                            </div>
+                            <div className="project-meta">
+                                <span className="project-visibility">
+                                    {project.private ? "Privé" : "Public"}
+                                </span>
+                                {project.language && (
+                                    <span className="project-language">{project.language}</span>
+                                )}
+                                <span className="project-updated">
+                                    Modifié le {new Date(project.updated_at).toLocaleDateString()}
+                                </span>
+                            </div>
+                            {project.description && (
+                                <div className="project-description">{project.description || "Aucune description fournie pour ce repository."}</div>
+                            )}
+                        </li>
+                    );
+                })}
+            </ul>
+        );
+    }

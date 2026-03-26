@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import type { GitHubRepo } from "@/lib/github";
 import ProjectsFilters from "./_components/projects-filters";
-import ProjectsItems from "./_components/projects-items";
+import { ProjectsItems } from "./_components/projects-items";
 import ProjectsPagination from "./_components/projects-pagination";
 import {
     applyProjectsQuery,
@@ -84,7 +84,7 @@ export default function ProjectsList({ repos }: ProjectsListProps) {
                         onNext={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
                     />
 
-                    <ProjectsItems repos={paginatedRepos} />
+                    <ProjectsItems projects={paginatedRepos} />
                 </>
             )}
         </section>
