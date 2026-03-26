@@ -1,0 +1,51 @@
+
+# ENV 
+
+.env
+.env.local
+.env.*.local
+.env.*
+
+
+# NODE
+
+node_modules
+.next
+out
+
+
+# LOGS
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+
+# SYSTEM
+
+.DS_Store
+Thumbs.db
+
+
+# KEYS / SECRETS
+
+*.pem
+*.key
+
+# VSCODE
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# PYTHON
+
+__pycache__/
+*.pyc
+venv/
+
+
+# TEMP
+
+*.tmp

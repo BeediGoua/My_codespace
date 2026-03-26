@@ -3,6 +3,11 @@ node_modules
 out
 .env*.local
 .env
+.env.python
+venv/
+*.pyc
+__pycache__/
+.env*
 .env.local
 .env.development.local
 .env.test.local
@@ -14,3 +19,10 @@ yarn-error.log*
 pnpm-debug.log*
 .DS_Store
 *.log
+*.tmp
+thumbs.db
+*.pem
+*.key
+
+DOCS/*
+DOCS
