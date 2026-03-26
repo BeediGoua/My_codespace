@@ -1,14 +1,10 @@
-import { cookies } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { fetchGitHubUser } from "@/lib/github";
+import { requireAccessToken } from "@/lib/auth/session";
 
 export default async function DashboardPage() {
-  const cookieStore = await cookies();
-  const accessToken = cookieStore.get("github_access_token")?.value;
-
-  if (!accessToken) {
-    redirect("/");
-  }
+  const accessToken = await requireAccessToken("/");
 
   let user;
 
@@ -33,6 +29,22 @@ export default async function DashboardPage() {
         <p>
           <strong>URL GitHub :</strong> {user.html_url}
         </p>
+      </div>
+
+      <div style={{ marginTop: "1rem" }}>
+        <Link
+          href="/projects"
+          style={{
+            display: "inline-block",
+            padding: "0.7rem 1rem",
+            borderRadius: "8px",
+            textDecoration: "none",
+            background: "black",
+            color: "white",
+          }}
+        >
+          Voir mes projets
+        </Link>
       </div>
 
       <form action="/api/auth/logout" method="post" style={{ marginTop: "1rem" }}>

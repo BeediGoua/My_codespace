@@ -1,129 +1,277 @@
-# GitHub Login MVP (Codespaces)
+# Codespace Launcher
 
-Ce projet implemente une connexion GitHub OAuth avec Next.js (App Router).
-Le but est de se connecter avec GitHub, recuperer le profil utilisateur et proteger la page dashboard.
+Application web Next.js qui sert de point d'entree vers GitHub et, a terme, vers GitHub Codespaces.
+
+L'objectif produit est simple :
+
+passer rapidement de l'idee d'un projet a un environnement pret a coder, sans friction inutile.
+
+Aujourd'hui, le projet couvre deja :
+
+- la connexion GitHub OAuth
+- la session utilisateur via cookie HttpOnly
+- un dashboard protege
+- une page Mes projets qui liste les repositories GitHub
+- recherche, filtres, tri et pagination sur les projets
+
+Le projet n'est pas encore le produit final. C'est une base fonctionnelle solide pour aller vers :
+
+- creation rapide de projet
+- templates de demarrage
+- lancement/reprise de Codespaces
+- ouverture rapide d'un workspace depuis navigateur ou tablette
+
+## Vision produit
+
+Le probleme vise n'est pas seulement de se connecter a GitHub.
+
+Le vrai sujet est de reduire la friction entre :
+
+- une idee
+- un repository GitHub
+- un environnement de travail
+- la reprise de ce travail depuis n'importe quel appareil
+
+La cible finale est donc un launcher/orchestrateur GitHub + Codespaces, pas un simple MVP de login.
+
+## Etat actuel
+
+Fonctionnalites deja disponibles :
+
+- login GitHub OAuth
+- callback OAuth GitHub
+- route de deconnexion
+- route API `/api/me`
+- route API `/api/repos`
+- dashboard protege
+- page `/projects` protegee
+- recherche, filtre public/prive, filtre fork/non-fork, tri et pagination cote client
+
+Fonctionnalites encore manquantes :
+
+- creation de repository depuis l'application
+- templates de projet
+- creation ou reprise de Codespaces
+- favoris, recents, statut d'environnement
+- UX produit plus ambitieuse
+
+## Stack
+
+Technologies actuellement utilisees :
+
+- Next.js 15
+- React 19
+- TypeScript
+- Node.js
+- npm
+- GitHub OAuth
+- GitHub REST API
+
+Structure generale :
+
+- `app/` : pages UI + routes API
+- `lib/` : logique partagee (GitHub, env, session)
+- `middleware.ts` : protection des routes privees
+- `DOCS/` : documentation produit, technique, debug et architecture
 
 ## Prerequis
 
-- Un compte GitHub
-- Un Codespace actif
-- Node.js et npm disponibles
+- un compte GitHub
+- Node.js LTS installe (22.x ou 24.x recommande)
+- npm disponible
 
-## 1) Installer et lancer le projet
+Important :
 
-1. Installer les dependances:
+- eviter Node 25.x sur ce projet
+- si tu alternes entre local et Codespaces, utilise idealement 2 OAuth Apps distinctes
+
+## Demarrage rapide en local
+
+1. Installer les dependances
 
 ```bash
 npm install
 ```
 
-2. Lancer l'application:
+2. Configurer `.env.local`
+
+```env
+GITHUB_CLIENT_ID=TON_CLIENT_ID
+GITHUB_CLIENT_SECRET=TON_CLIENT_SECRET
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+GITHUB_REDIRECT_URI=http://localhost:3000/api/auth/github/callback
+```
+
+3. Configurer l'OAuth App GitHub
+
+- Homepage URL : `http://localhost:3000`
+- Authorization callback URL : `http://localhost:3000/api/auth/github/callback`
+
+4. Lancer l'application
 
 ```bash
 npm run dev
 ```
 
-3. Ouvrir l'onglet PORTS dans Codespaces:
-- Barre en bas: PORTS
-- Si absent: Ctrl+Shift+P puis `Ports: Focus on Ports View`
+5. Ouvrir
 
-4. Recuperer l'URL du port 3000 (URL publique de l'app):
-- Copier l'URL de la ligne `3000`
-- Option tablette: mettre la visibilite du port en `Public`
+```text
+http://localhost:3000
+```
 
-Exemple de forme:
+## Demarrage en Codespaces
+
+1. Lancer l'application
+
+```bash
+npm install
+npm run dev
+```
+
+2. Ouvrir l'onglet `PORTS`
+
+3. Recuperer l'URL publique du port `3000`
+
+Exemple :
 
 ```text
 https://<url-forwardee-port-3000>.app.github.dev
 ```
 
-## 2) Creer l'OAuth App GitHub (obtenir les cles)
+4. Configurer l'OAuth App Codespaces avec cette URL
 
-1. Aller sur la page GitHub OAuth Apps:
-   - https://github.com/settings/developers
-2. Cliquer sur `New OAuth App`.
-3. Remplir:
-   - Application name: `github-login-mvp-codespaces`
-   - Homepage URL: `URL_DU_PORT_3000`
-   - Authorization callback URL: `URL_DU_PORT_3000/api/auth/github/callback`
-4. Valider puis copier:
-   - `Client ID`
-   - `Client Secret` (Generate a new client secret)
+- Homepage URL : `URL_DU_PORT_3000`
+- Authorization callback URL : `URL_DU_PORT_3000/api/auth/github/callback`
 
-## 3) Ajouter les cles dans GitHub Settings (recommande)
-
-Au lieu de stocker des secrets dans le repo, utilisez les Codespaces Secrets.
-
-1. Aller dans GitHub Settings > Codespaces > Secrets
-2. Creer ces secrets
-3. Si GitHub refuse les noms avec `GITHUB`, vous pouvez utiliser les noms plus courts ci-dessous
-3. Donner l'acces a ce repository
-4. Redemarrer/recreer le Codespace pour charger les variables
-
-Noms acceptes par le projet:
+5. Configurer les secrets Codespaces avec les memes valeurs
 
 ```text
-GITHUB_CLIENT_ID ou CLIENT_ID
-GITHUB_CLIENT_SECRET ou CLIENT_SECRET
-NEXT_PUBLIC_APP_URL ou APP_URL
-GITHUB_REDIRECT_URI ou REDIRECT_URI
+GITHUB_CLIENT_ID
+GITHUB_CLIENT_SECRET
+NEXT_PUBLIC_APP_URL
+GITHUB_REDIRECT_URI
 ```
 
-Valeurs attendues:
+## Tester l'application
 
-```text
-GITHUB_CLIENT_ID=<Client ID OAuth App>
-GITHUB_CLIENT_SECRET=<Client Secret OAuth App>
-NEXT_PUBLIC_APP_URL=https://<url-forwardee-port-3000>.app.github.dev
-GITHUB_REDIRECT_URI=https://<url-forwardee-port-3000>.app.github.dev/api/auth/github/callback
+Parcours conseille :
+
+1. Ouvrir `/`
+2. Cliquer sur `Se connecter avec GitHub`
+3. Verifier la redirection vers `/dashboard`
+4. Verifier les informations utilisateur
+5. Cliquer sur `Voir mes projets`
+6. Tester recherche, filtres, tri et pagination sur `/projects`
+7. Ouvrir `/api/me`
+8. Ouvrir `/api/repos`
+
+Comportement attendu :
+
+- non connecte : routes protegees redirigees ou reponses `401`
+- connecte : dashboard et projets accessibles
+
+## Contrat API actuel
+
+Les routes internes utilisent une forme commune.
+
+Succes :
+
+```json
+{
+   "ok": true,
+   "authenticated": true,
+   "data": {}
+}
 ```
 
-Exemple si vous utilisez les noms courts:
+Erreur :
 
-```text
-CLIENT_ID=<Client ID OAuth App>
-CLIENT_SECRET=<Client Secret OAuth App>
-APP_URL=https://<url-forwardee-port-3000>.app.github.dev
-REDIRECT_URI=https://<url-forwardee-port-3000>.app.github.dev/api/auth/github/callback
+```json
+{
+   "ok": false,
+   "authenticated": false,
+   "error": {
+      "code": "UNAUTHENTICATED",
+      "message": "Aucune session active."
+   }
+}
 ```
 
-Puis relancer l'app:
+## Ce que le projet prouve deja
 
-```bash
-npm run dev
-```
+Le projet montre deja qu'on sait :
 
-## 4) Tester l'application
+- connecter proprement une application a GitHub
+- gerer un flux OAuth minimal et fonctionnel
+- proteger des pages applicatives
+- organiser une base Next.js exploitable
+- brancher une vraie lecture des repositories utilisateur
 
-1. Ouvrir l'URL publique de l'app
-2. Cliquer `Se connecter avec GitHub`
-3. Autoriser l'application GitHub
-4. Verifier la redirection vers `/dashboard`
-5. Verifier les infos utilisateur affichees
-6. Tester `Se deconnecter`
-7. Ouvrir `/api/me`:
-   - connecte: `authenticated: true`
-   - deconnecte: `401` et `authenticated: false`
+## Priorite suivante
 
-## 5) Depannage rapide
+La suite logique n'est plus l'authentification.
 
-- Erreur `redirect_uri_mismatch`:
-  - verifier que callback GitHub et `GITHUB_REDIRECT_URI` sont strictement identiques
-- Erreur variables manquantes:
-   - verifier les 4 secrets Codespaces puis redemarrer le Codespace ou `npm run dev`
-- Dashboard inaccessible:
-  - verifier cookie session et refaire le login
+La prochaine etape produit est :
 
-## 6) Securite importante
+1. ajouter un vrai bouton `Nouveau projet`
+2. creer un flux de creation de repository
+3. preparer l'ouverture d'un projet dans Codespaces
 
-- Ne jamais partager `GITHUB_CLIENT_SECRET`
-- Si le secret fuit, le regenerer immediatement dans l'OAuth App
-- En production, preferer une session serveur plutot que token brut en cookie
+## Depannage rapide
+
+### `redirect_uri_mismatch`
+
+Verifier que :
+
+- la callback GitHub OAuth
+- `GITHUB_REDIRECT_URI`
+
+sont strictement identiques.
+
+### 404 sur callback OAuth
+
+Cause probable :
+
+- URL Codespaces ancienne ou inactive
+
+Correction :
+
+- mettre a jour l'URL du port 3000 dans l'OAuth App
+- mettre a jour `NEXT_PUBLIC_APP_URL` et `GITHUB_REDIRECT_URI`
+
+### `next` non reconnu ou dependances cassees
+
+Verifier :
+
+- version Node LTS
+- reinstallation propre avec `npm install`
+
+### bug en mode `dev` avec Node 25
+
+Correction :
+
+- revenir sur Node 22.x ou 24.x
+
+## Securite
+
+- ne jamais partager `GITHUB_CLIENT_SECRET`
+- regenerer le secret s'il a fuite
+- en production, preferer une vraie session serveur opaque plutot qu'un token brut en cookie
+
+## Documentation utile
+
+- `DOCS/PROJECT_STATUS.md` : etat d'avancement produit
+- `DOCS/ARCHITECTURE_LITE.md` : vue d'architecture simple
+- `DOCS/ETAPES_REELLES_WINDOWS.md` : remise en etat environnement Windows
+- `DOCS/GUIDE_TESTS_ET_DEBUG.md` : tests et debug
+- `DOCS/OAUTH_LOCAL_CODESPACES.md` : strategie OAuth local/Codespaces
+- `DOCS/TECHNO_TYPESCRIPT_NODE_NPM.md` : stack et explications detaillees
 
 ## Liens utiles
 
-- New OAuth App: https://github.com/settings/applications/new
-- Developer settings: https://github.com/settings/developers
-- Docs OAuth Apps GitHub: https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app
-- Port forwarding Codespaces: https://docs.github.com/en/codespaces/developing-in-a-codespace/forwarding-ports-in-your-codespace
-- API GitHub /user: https://docs.github.com/en/rest/users/users#get-the-authenticated-user
+- GitHub OAuth Apps : https://github.com/settings/developers
+- New OAuth App : https://github.com/settings/applications/new
+- Docs OAuth Apps GitHub : https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app
+- Docs GitHub Codespaces : https://docs.github.com/en/codespaces
+- API GitHub `/user` : https://docs.github.com/en/rest/users/users#get-the-authenticated-user
+- API GitHub repositories : https://docs.github.com/en/rest/repos/repos#list-repositories-for-the-authenticated-user
