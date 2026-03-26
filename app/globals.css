@@ -592,6 +592,7 @@ select {
 }
 
 @media (max-width: 960px) {
+
   .hero-shell,
   .toolbar-grid,
   .repo-grid,
@@ -617,6 +618,7 @@ select {
 }
 
 @media (max-width: 640px) {
+
   .site-shell,
   .page-shell {
     width: min(100vw - 20px, 1180px);
