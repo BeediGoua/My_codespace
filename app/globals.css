@@ -22,11 +22,12 @@
   padding: 0.7rem 1rem;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.95);
+  background: rgba(255, 255, 255, 0.95);
   font-size: 1rem;
   color: var(--text);
   transition: border 0.18s;
 }
+
 .form-input:focus {
   outline: 2px solid var(--accent-soft);
   border-color: var(--accent);
@@ -47,6 +48,7 @@
   padding: 8px 14px;
   font-size: 0.98rem;
 }
+
 :root {
   --bg: #f6f2ea;
   --bg-accent: #efe7da;
