@@ -1,7 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getOAuthEnv } from "@/lib/env";
 
+// Mode test: permet d'injecter un token de session de test pour les tests e2e
+const TEST_MODE = process.env.TEST_MODE === "1";
 export async function GET(request: NextRequest) {
+  if (TEST_MODE) {
+    // Simule un login OAuth réussi et injecte un token de test
+    const response = NextResponse.redirect("/dashboard");
+    response.cookies.set("github_access_token", "test-token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 8,
+    });
+    return response;
+  }
   let clientId: string;
   let clientSecret: string;
   let redirectUri: string;
