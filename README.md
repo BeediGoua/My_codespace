@@ -1,277 +1,153 @@
 # Codespace Launcher
 
-Application web Next.js qui sert de point d'entree vers GitHub et, a terme, vers GitHub Codespaces.
+**Passez de l’idée à un environnement prêt à coder sur GitHub, sans friction.**
 
-L'objectif produit est simple :
+---
 
-passer rapidement de l'idee d'un projet a un environnement pret a coder, sans friction inutile.
+## Présentation
 
-Aujourd'hui, le projet couvre deja :
+Codespace Launcher est une application web Next.js qui simplifie la création, la gestion et l’ouverture de projets GitHub et Codespaces, depuis n’importe quel appareil (PC, tablette, navigateur).
 
-- la connexion GitHub OAuth
-- la session utilisateur via cookie HttpOnly
-- un dashboard protege
-- une page Mes projets qui liste les repositories GitHub
-- recherche, filtres, tri et pagination sur les projets
+Le but : permettre à tout utilisateur de créer un projet, de le configurer, puis de l’ouvrir ou le reprendre dans un environnement cloud prêt à coder, en quelques clics.
 
-Le projet n'est pas encore le produit final. C'est une base fonctionnelle solide pour aller vers :
+---
 
-- creation rapide de projet
-- templates de demarrage
-- lancement/reprise de Codespaces
-- ouverture rapide d'un workspace depuis navigateur ou tablette
+## Fonctionnalités principales
 
-## Vision produit
+- Connexion sécurisée via GitHub OAuth
+- Dashboard utilisateur protégé
+- Liste interactive de vos repositories GitHub
+- Recherche, filtres, tri et pagination sur vos projets
+- Création rapide de repository GitHub (formulaire intégré)
+- Actions rapides : ouvrir sur GitHub, ouvrir/créer/reprendre dans Codespaces
+- Génération automatique de structure de projet selon le type choisi 
+- Suivi de l’état d’environnement 
+- Interface responsive adaptée tablette/mobile 
 
-Le probleme vise n'est pas seulement de se connecter a GitHub.
+---
 
-Le vrai sujet est de reduire la friction entre :
+## Schéma fonctionnel
 
-- une idee
-- un repository GitHub
-- un environnement de travail
-- la reprise de ce travail depuis n'importe quel appareil
+```mermaid
+flowchart TD
+    A[Idée de projet] --> B[Création du repository GitHub]
+    B --> C[Choix du template (Next.js, Python, Data Science...)]
+    C --> D[Génération de la structure de base]
+    D --> E[Ouverture ou création d’un Codespace]
+    E --> F[Environnement prêt à coder]
+    F --> G[Reprise du travail sur tout appareil]
+```
 
-La cible finale est donc un launcher/orchestrateur GitHub + Codespaces, pas un simple MVP de login.
+---
 
-## Etat actuel
+## Démarrage rapide
 
-Fonctionnalites deja disponibles :
+### Prérequis
+- Un compte GitHub
+- Node.js LTS (22.x ou 24.x recommandé)
+- npm
 
-- login GitHub OAuth
-- callback OAuth GitHub
-- route de deconnexion
-- route API `/api/me`
-- route API `/api/repos`
-- dashboard protege
-- page `/projects` protegee
-- recherche, filtre public/prive, filtre fork/non-fork, tri et pagination cote client
+### Installation
 
-Fonctionnalites encore manquantes :
+```bash
+git clone https://github.com/<owner>/<repo>.git
+cd <repo>
+npm install
+cp .env.local.example .env.local
+# Renseigne tes secrets GitHub dans .env.local
+npm run dev
+```
 
-- creation de repository depuis l'application
-- templates de projet
-- creation ou reprise de Codespaces
-- favoris, recents, statut d'environnement
-- UX produit plus ambitieuse
+Ouvre [http://localhost:3000](http://localhost:3000) dans ton navigateur.
 
-## Stack
+### Configuration OAuth
+- Crée une OAuth App sur GitHub ([docs](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app))
+- Renseigne les variables dans `.env.local` :
+  - `GITHUB_CLIENT_ID`
+  - `GITHUB_CLIENT_SECRET`
+  - `NEXT_PUBLIC_APP_URL`
+  - `GITHUB_REDIRECT_URI`
 
-Technologies actuellement utilisees :
+---
+
+## Utilisation
+
+1. Clique sur “Se connecter avec GitHub”
+2. Explore le dashboard et la page “Mes projets”
+3. Crée un nouveau projet, teste les actions Codespaces
+4. Reprends ou crée un Codespace pour chaque projet
+5. Profite d’un environnement cloud prêt à coder
+
+---
+
+## Documentation
+
+- [Guide débutant](DOCS/GUIDE_DEBUTANT_PROJET.md)
+- [Statut du projet](DOCS/PROJECT_STATUS.md)
+- [Architecture](DOCS/ARCHITECTURE_LITE.md)
+- [Debug & tests](DOCS/GUIDE_TESTS_ET_DEBUG.md)
+- [OAuth local/Codespaces](DOCS/OAUTH_LOCAL_CODESPACES.md)
+
+---
+
+## Roadmap (vision finale)
+
+1. Orchestration Codespaces (API, état, reprise)
+2. Génération automatique de structure selon le type de projet
+3. UX mobile/tablette optimisée
+4. Sécurité renforcée (GitHub App, session serveur)
+5. Ajout de fichiers, notebooks, favoris, historique
+
+---
+
+## Stack technique
 
 - Next.js 15
 - React 19
 - TypeScript
 - Node.js
-- npm
-- GitHub OAuth
-- GitHub REST API
+- GitHub OAuth & REST API
 
-Structure generale :
-
+Structure :
 - `app/` : pages UI + routes API
-- `lib/` : logique partagee (GitHub, env, session)
-- `middleware.ts` : protection des routes privees
+- `lib/` : logique partagée (GitHub, env, session)
+- `middleware.ts` : protection des routes privées
 - `DOCS/` : documentation produit, technique, debug et architecture
 
-## Prerequis
+---
 
-- un compte GitHub
-- Node.js LTS installe (22.x ou 24.x recommande)
-- npm disponible
+## Sécurité
 
-Important :
+- Ne jamais partager `GITHUB_CLIENT_SECRET`
+- Regénérer le secret s’il a fuité
+- En production, préférer une vraie session serveur opaque plutôt qu’un token brut en cookie
 
-- eviter Node 25.x sur ce projet
-- si tu alternes entre local et Codespaces, utilise idealement 2 OAuth Apps distinctes
+---
 
-## Demarrage rapide en local
+## Contribuer
 
-1. Installer les dependances
+Les contributions sont les bienvenues !
+- Forkez le projet
+- Ouvrez une issue ou une pull request
+- Proposez des idées ou des améliorations
 
-```bash
-npm install
-```
+---
 
-2. Configurer `.env.local`
+## Licence
 
-```env
-GITHUB_CLIENT_ID=TON_CLIENT_ID
-GITHUB_CLIENT_SECRET=TON_CLIENT_SECRET
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-GITHUB_REDIRECT_URI=http://localhost:3000/api/auth/github/callback
-```
+MIT
 
-3. Configurer l'OAuth App GitHub
-
-- Homepage URL : `http://localhost:3000`
-- Authorization callback URL : `http://localhost:3000/api/auth/github/callback`
-
-4. Lancer l'application
-
-```bash
-npm run dev
-```
-
-5. Ouvrir
-
-```text
-http://localhost:3000
-```
-
-## Demarrage en Codespaces
-
-1. Lancer l'application
-
-```bash
-npm install
-npm run dev
-```
-
-2. Ouvrir l'onglet `PORTS`
-
-3. Recuperer l'URL publique du port `3000`
-
-Exemple :
-
-```text
-https://<url-forwardee-port-3000>.app.github.dev
-```
-
-4. Configurer l'OAuth App Codespaces avec cette URL
-
-- Homepage URL : `URL_DU_PORT_3000`
-- Authorization callback URL : `URL_DU_PORT_3000/api/auth/github/callback`
-
-5. Configurer les secrets Codespaces avec les memes valeurs
-
-```text
-GITHUB_CLIENT_ID
-GITHUB_CLIENT_SECRET
-NEXT_PUBLIC_APP_URL
-GITHUB_REDIRECT_URI
-```
-
-## Tester l'application
-
-Parcours conseille :
-
-1. Ouvrir `/`
-2. Cliquer sur `Se connecter avec GitHub`
-3. Verifier la redirection vers `/dashboard`
-4. Verifier les informations utilisateur
-5. Cliquer sur `Voir mes projets`
-6. Tester recherche, filtres, tri et pagination sur `/projects`
-7. Ouvrir `/api/me`
-8. Ouvrir `/api/repos`
-
-Comportement attendu :
-
-- non connecte : routes protegees redirigees ou reponses `401`
-- connecte : dashboard et projets accessibles
-
-## Contrat API actuel
-
-Les routes internes utilisent une forme commune.
-
-Succes :
-
-```json
-{
-   "ok": true,
-   "authenticated": true,
-   "data": {}
-}
-```
-
-Erreur :
-
-```json
-{
-   "ok": false,
-   "authenticated": false,
-   "error": {
-      "code": "UNAUTHENTICATED",
-      "message": "Aucune session active."
-   }
-}
-```
-
-## Ce que le projet prouve deja
-
-Le projet montre deja qu'on sait :
-
-- connecter proprement une application a GitHub
-- gerer un flux OAuth minimal et fonctionnel
-- proteger des pages applicatives
-- organiser une base Next.js exploitable
-- brancher une vraie lecture des repositories utilisateur
-
-## Priorite suivante
-
-La suite logique n'est plus l'authentification.
-
-La prochaine etape produit est :
-
-1. ajouter un vrai bouton `Nouveau projet`
-2. creer un flux de creation de repository
-3. preparer l'ouverture d'un projet dans Codespaces
-
-## Depannage rapide
-
-### `redirect_uri_mismatch`
-
-Verifier que :
-
-- la callback GitHub OAuth
-- `GITHUB_REDIRECT_URI`
-
-sont strictement identiques.
-
-### 404 sur callback OAuth
-
-Cause probable :
-
-- URL Codespaces ancienne ou inactive
-
-Correction :
-
-- mettre a jour l'URL du port 3000 dans l'OAuth App
-- mettre a jour `NEXT_PUBLIC_APP_URL` et `GITHUB_REDIRECT_URI`
-
-### `next` non reconnu ou dependances cassees
-
-Verifier :
-
-- version Node LTS
-- reinstallation propre avec `npm install`
-
-### bug en mode `dev` avec Node 25
-
-Correction :
-
-- revenir sur Node 22.x ou 24.x
-
-## Securite
-
-- ne jamais partager `GITHUB_CLIENT_SECRET`
-- regenerer le secret s'il a fuite
-- en production, preferer une vraie session serveur opaque plutot qu'un token brut en cookie
-
-## Documentation utile
-
-- `DOCS/PROJECT_STATUS.md` : etat d'avancement produit
-- `DOCS/ARCHITECTURE_LITE.md` : vue d'architecture simple
-- `DOCS/ETAPES_REELLES_WINDOWS.md` : remise en etat environnement Windows
-- `DOCS/GUIDE_TESTS_ET_DEBUG.md` : tests et debug
-- `DOCS/OAUTH_LOCAL_CODESPACES.md` : strategie OAuth local/Codespaces
-- `DOCS/TECHNO_TYPESCRIPT_NODE_NPM.md` : stack et explications detaillees
+---
 
 ## Liens utiles
 
-- GitHub OAuth Apps : https://github.com/settings/developers
-- New OAuth App : https://github.com/settings/applications/new
-- Docs OAuth Apps GitHub : https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app
-- Docs GitHub Codespaces : https://docs.github.com/en/codespaces
-- API GitHub `/user` : https://docs.github.com/en/rest/users/users#get-the-authenticated-user
-- API GitHub repositories : https://docs.github.com/en/rest/repos/repos#list-repositories-for-the-authenticated-user
+- [GitHub OAuth Apps](https://github.com/settings/developers)
+- [Créer une OAuth App](https://github.com/settings/applications/new)
+- [Docs OAuth Apps GitHub](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app)
+- [Docs GitHub Codespaces](https://docs.github.com/en/codespaces)
+- [API GitHub `/user`](https://docs.github.com/en/rest/users/users#get-the-authenticated-user)
+- [API GitHub repositories](https://docs.github.com/en/rest/repos/repos#list-repositories-for-the-authenticated-user)
+
+---
+
+> Ce projet est en développement actif. Forkez, testez, proposez des idées !
