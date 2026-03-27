@@ -18,9 +18,23 @@ export async function githubPost<T>({ accessToken, path, body }: GitHubPostOptio
     });
 
     if (!response.ok) {
-        throw new Error("Echec de requete POST GitHub.");
+        let errorMsg = `Echec de requete POST GitHub.`;
+        const errorCode = response.status;
+        try {
+            const errJson = await response.json();
+            if (errJson && errJson.message) {
+                errorMsg += ` ${errJson.message}`;
+            } else {
+                errorMsg += ` ${JSON.stringify(errJson)}`;
+            }
+        } catch {
+            // ignore
+        }
+        const error = new Error(errorMsg);
+        // @ts-expect-error: Needed to attach HTTP status code for error handling
+        error.status = errorCode;
+        throw error;
     }
-
     return response.json();
 }
 type GitHubRequestOptions = {

@@ -17,6 +17,7 @@ export const test = base.extend({
                     expires: Date.now() / 1000 + 3600,
                 },
             ],
+            origins: [],
         });
     },
 });
