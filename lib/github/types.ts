@@ -16,4 +16,5 @@ export type GitHubRepo = {
     fork: boolean;
     description: string | null;
     updated_at: string;
+    language?: string | null;
 };

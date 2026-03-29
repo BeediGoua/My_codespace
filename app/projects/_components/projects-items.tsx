@@ -1,60 +1,5 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-type Favorite = {
-    user: string;
-    project: string;
-    createdAt: string;
-};
-
-// Pour la démo, user statique (à remplacer par l'utilisateur connecté)
-const user = "demo-user";
-
-const [favorites, setFavorites] = useState<Favorite[]>([]);
-const [favLoading, setFavLoading] = useState(false);
-
-// Charger les favoris au montage
-useEffect(() => {
-    const fetchFavorites = async () => {
-        setFavLoading(true);
-        try {
-            const res = await fetch("/api/favorites");
-            const data = await res.json();
-            setFavorites(data.filter((f: Favorite) => f.user === user));
-        } catch {
-            setFavorites([]);
-        } finally {
-            setFavLoading(false);
-        }
-    };
-    fetchFavorites();
-}, []);
-
-// Ajouter ou retirer un favori
-const toggleFavorite = async (projectName: string) => {
-    setFavLoading(true);
-    const isFav = favorites.some(f => f.project === projectName);
-    try {
-        if (isFav) {
-            await fetch("/api/favorites", {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user, project: projectName })
-            });
-        } else {
-            await fetch("/api/favorites", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user, project: projectName })
-            });
-        }
-        // Refresh
-        const res = await fetch("/api/favorites");
-        const data = await res.json();
-        setFavorites(data.filter((f: Favorite) => f.user === user));
-    } finally {
-        setFavLoading(false);
-    }
-};
 
 export type ProjectItemProps = {
     id: number | string;
@@ -63,7 +8,7 @@ export type ProjectItemProps = {
     description?: string | null;
     html_url: string;
     private: boolean;
-    language?: string;
+    language?: string | null;
     updated_at: string;
 };
 
@@ -75,7 +20,65 @@ type Codespace = {
     web_url: string;
 };
 
+type Favorite = {
+    user: string;
+    project: string;
+    createdAt: string;
+};
+
 export function ProjectsItems({ projects }: { projects: ProjectItemProps[] }) {
+    // Pour la démo, user statique (à remplacer par l'utilisateur connecté)
+    const user = "demo-user";
+
+    const [favorites, setFavorites] = useState<Favorite[]>([]);
+    const [favLoading, setFavLoading] = useState(false);
+
+    // Charger les favoris au montage
+    useEffect(() => {
+        const fetchFavorites = async () => {
+            setFavLoading(true);
+            try {
+                const res = await fetch("/api/favorites");
+                const data = await res.json();
+                setFavorites(data.filter((f: Favorite) => f.user === user));
+            } catch {
+                setFavorites([]);
+            } finally {
+                setFavLoading(false);
+            }
+        };
+        fetchFavorites();
+    }, []);
+
+    // Ajouter ou retirer un favori
+    const toggleFavorite = async (projectName: string) => {
+        setFavLoading(true);
+        const isFav = favorites.some(f => f.project === projectName);
+        try {
+            if (isFav) {
+                await fetch("/api/favorites", {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user, project: projectName })
+                });
+            } else {
+                await fetch("/api/favorites", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user, project: projectName })
+                });
+            }
+            // Refresh
+            const res = await fetch("/api/favorites");
+            const data = await res.json();
+            setFavorites(data.filter((f: Favorite) => f.user === user));
+        } finally {
+            setFavLoading(false);
+        }
+    };
+    // ...existing code...
+
+    // ...existing code...
     const [codespacesMap, setCodespacesMap] = useState<Record<string, Codespace[]>>({});
     const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({});
     const [errorMap, setErrorMap] = useState<Record<string, string>>({});
@@ -228,18 +231,18 @@ export function ProjectsItems({ projects }: { projects: ProjectItemProps[] }) {
                                         const isOff = cs.state === "Shutdown";
 
                                         return (
-                                            <div key={cs.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#f9fafb', borderRadius: 8, border: '1px solid #f0f0f0' }}>
+                                            <div key={cs.id} style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '16px', background: '#f9fafb', borderRadius: 12, border: '1px solid #e5e7eb' }}>
                                                 <div>
-                                                    <div style={{ fontWeight: 600, fontSize: 14 }}>{cs.display_name || cs.name}</div>
-                                                    <div style={{ fontSize: 12, display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                                                        <span style={{ width: 8, height: 8, borderRadius: '50%', background: isStable ? '#10b981' : (isOff ? '#9ca3af' : '#f59e0b') }}></span>
+                                                    <div style={{ fontWeight: 600, fontSize: 18, color: '#111827' }}>{cs.display_name || cs.name}</div>
+                                                    <div style={{ fontSize: 14, display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, fontWeight: 500, color: '#6b7280' }}>
+                                                        <span style={{ width: 10, height: 10, borderRadius: '50%', background: isStable ? '#10b981' : (isOff ? '#9ca3af' : '#f59e0b') }}></span>
                                                         {cs.state}
                                                     </div>
                                                 </div>
-                                                <div style={{ display: 'flex', gap: 6 }}>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                                                     {isStable && cs.web_url && (
-                                                        <a href={`/workspace/${cs.name}`} className="button-primary" style={{ padding: '4px 10px', fontSize: 12 }}>
-                                                            Ouvrir
+                                                        <a href={`/workspace/${cs.name}`} className="button-primary" style={{ flex: 1, minWidth: '120px', padding: '14px 16px', fontSize: 16, textAlign: 'center', borderRadius: 8 }}>
+                                                            💻 Ouvrir l'éditeur
                                                         </a>
                                                     )}
                                                     {isStable && (
@@ -247,9 +250,9 @@ export function ProjectsItems({ projects }: { projects: ProjectItemProps[] }) {
                                                             onClick={() => handleAction(fullName, cs.name, 'stop')}
                                                             disabled={actionLoading[`${fullName}-${cs.name}-stop`]}
                                                             className="button-secondary"
-                                                            style={{ padding: '4px 10px', fontSize: 12 }}
+                                                            style={{ flex: 1, minWidth: '120px', padding: '14px 16px', fontSize: 16, borderRadius: 8 }}
                                                         >
-                                                            Arrêter
+                                                            ⏸️ Arrêter
                                                         </button>
                                                     )}
                                                     {isOff && (
@@ -257,18 +260,18 @@ export function ProjectsItems({ projects }: { projects: ProjectItemProps[] }) {
                                                             onClick={() => handleAction(fullName, cs.name, 'start')}
                                                             disabled={actionLoading[`${fullName}-${cs.name}-start`]}
                                                             className="button-primary"
-                                                            style={{ padding: '4px 10px', fontSize: 12, background: '#444' }}
+                                                            style={{ flex: 1, minWidth: '120px', padding: '14px 16px', fontSize: 16, background: '#374151', borderRadius: 8 }}
                                                         >
-                                                            Démarrer
+                                                            ▶️ Démarrer
                                                         </button>
                                                     )}
                                                     <button
-                                                        onClick={() => { if (confirm('Supprimer ce Codespace ?')) handleAction(fullName, cs.name, 'delete') }}
+                                                        onClick={() => { if (confirm('Supprimer définitivement ce Codespace ?')) handleAction(fullName, cs.name, 'delete') }}
                                                         disabled={actionLoading[`${fullName}-${cs.name}-delete`]}
                                                         className="button-secondary"
-                                                        style={{ padding: '4px 10px', fontSize: 12, color: '#c00' }}
+                                                        style={{ flex: 1, minWidth: '120px', padding: '14px 16px', fontSize: 16, color: '#ef4444', borderColor: '#fee2e2', background: '#fff', borderRadius: 8 }}
                                                     >
-                                                        Supprimer
+                                                        🗑️ Supprimer
                                                     </button>
                                                 </div>
                                             </div>

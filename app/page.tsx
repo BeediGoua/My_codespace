@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function HomePage() {
   return (
     <main className="site-shell">
@@ -29,9 +31,9 @@ export default function HomePage() {
             <a href="/api/auth/github/login" className="button-primary">
               Se connecter avec GitHub
             </a>
-            <a href="/projects" className="button-secondary">
+            <Link href="/projects" className="button-secondary">
               Voir l&apos;orientation produit
-            </a>
+            </Link>
           </div>
 
           <div className="hero-list">

@@ -1,6 +1,6 @@
 // app/workspace/[name]/page.tsx
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, use } from "react";
 import Link from "next/link";
 
 type Codespace = {
@@ -12,7 +12,7 @@ type Codespace = {
 };
 
 export default function WorkspacePage({ params }: { params: Promise<{ name: string }> }) {
-    const { name } = React.use(params);
+    const { name } = use(params);
     const [codespace, setCodespace] = useState<Codespace | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -30,7 +30,7 @@ export default function WorkspacePage({ params }: { params: Promise<{ name: stri
             const data = await res.json();
             if (!data.ok) throw new Error(data.error || "Erreur chargement");
             setCodespace(data.data);
-            
+
             if (data.data.state === "Available" && data.data.web_url) {
                 handleAutoLaunch(data.data.web_url);
             }
@@ -87,13 +87,13 @@ export default function WorkspacePage({ params }: { params: Promise<{ name: stri
                         <div style={{ fontSize: 48, marginBottom: 24 }}>🚀</div>
                         <h2 style={{ fontSize: 24, marginBottom: 16 }}>Prêt à décoller !</h2>
                         <p style={{ color: '#aaa', lineHeight: 1.6, marginBottom: 32 }}>
-                            GitHub bloque l&apos;affichage direct de VS Code dans une fenêtre tierce pour votre sécurité. 
+                            GitHub bloque l&apos;affichage direct de VS Code dans une fenêtre tierce pour votre sécurité.
                             Le workspace va s&apos;ouvrir dans un onglet dédié.
                         </p>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            <a 
-                                href={codespace?.web_url} 
-                                className="button-primary" 
+                            <a
+                                href={codespace?.web_url}
+                                className="button-primary"
                                 style={{ padding: '14px 28px', fontSize: 16, borderRadius: 8, background: '#007acc', color: '#fff', textDecoration: 'none', fontWeight: 'bold' }}
                             >
                                 Ouvrir le Workspace maintenant

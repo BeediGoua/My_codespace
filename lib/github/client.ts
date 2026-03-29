@@ -42,6 +42,32 @@ export async function githubPost<T>({ accessToken, path, body }: GitHubPostOptio
     }
     return response.json();
 }
+
+export async function githubPut<T>({ accessToken, path, body }: GitHubPostOptions): Promise<T> {
+    const response = await fetch(`https://api.github.com${path}`, {
+        method: "PUT",
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "application/vnd.github+json",
+            "User-Agent": "github-login-mvp",
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        let errorMsg = `Echec de requete PUT GitHub.`;
+        const errorCode = response.status;
+        try {
+            const errJson = await response.json();
+            if (errJson && errJson.message) {
+                errorMsg += ` ${errJson.message}`;
+            }
+        } catch {}
+        throw new GitHubError(errorMsg, errorCode);
+    }
+    return response.json();
+}
 type GitHubRequestOptions = {
     accessToken: string;
     path: string;

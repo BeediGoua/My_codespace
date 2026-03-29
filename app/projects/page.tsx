@@ -36,6 +36,9 @@ export default async function ProjectsPage() {
                     <Link href="/projects/create" className="button-primary">
                         + Nouveau projet
                     </Link>
+                    <Link href="/favorites" className="button-secondary">
+                        Voir mes favoris
+                    </Link>
                     <Link href="/dashboard" className="button-secondary">
                         Retour dashboard
                     </Link>

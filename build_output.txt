@@ -1,0 +1,60 @@
+﻿   Ôû▓ Next.js 15.3.1
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ Ô£ô Compiled successfully in 2000ms
+   Linting and checking validity of types ...
+node.exe : Failed to compile.
+Au caractère Ligne:1 : 1
++ & "C:\Program 
+Files\nodejs/node.exe" "C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~
+    + CategoryInfo          : 
+NotSpe    cified: (Failed to 
+compile.:Stri    ng) [], 
+RemoteException
+    + FullyQualifiedErrorId : 
+Native    CommandError
+ 
+
+./app/projects/projects-list.tsx:87
+:36
+Type error: Type 'GitHubRepo[]' is 
+not assignable to type 
+'ProjectItemProps[]'.
+  Type 'GitHubRepo' is not 
+assignable to type 
+'ProjectItemProps'.
+    Types of property 'language' 
+are incompatible.
+      Type 'string | null | 
+undefined' is not assignable to 
+type 'string | undefined'.
+        Type 'null' is not 
+assignable to type 'string | 
+undefined'.
+
+[0m [90m 85 |[39m               
+      [33m/[39m[33m>[39m[0m
+[0m [90m 86 |[39m[0m
+[0m[31m[1m>[22m[39m[90m 87 
+|[39m                     
+[33m<[39m[33mProjectsItems[39m 
+projects[33m=[39m{paginatedRepos}
+ [33m/[39m[33m>[39m[0m
+[0m [90m    |[39m               
+                     
+[31m[1m^[22m[39m[0m
+[0m [90m 88 |[39m               
+  [33m<[39m[33m/[39m[33m>[39m
+[0m
+[0m [90m 89 |[39m             
+)}[0m
+[0m [90m 90 |[39m         [33m<
+[39m[33m/[39m[33msection[39m[
+33m>[39m[0m
+Next.js build worker exited with 
+code: 1 and signal: null
