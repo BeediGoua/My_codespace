@@ -1,5 +1,60 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from "react";
+type Favorite = {
+    user: string;
+    project: string;
+    createdAt: string;
+};
+
+// Pour la démo, user statique (à remplacer par l'utilisateur connecté)
+const user = "demo-user";
+
+const [favorites, setFavorites] = useState<Favorite[]>([]);
+const [favLoading, setFavLoading] = useState(false);
+
+// Charger les favoris au montage
+useEffect(() => {
+    const fetchFavorites = async () => {
+        setFavLoading(true);
+        try {
+            const res = await fetch("/api/favorites");
+            const data = await res.json();
+            setFavorites(data.filter((f: Favorite) => f.user === user));
+        } catch {
+            setFavorites([]);
+        } finally {
+            setFavLoading(false);
+        }
+    };
+    fetchFavorites();
+}, []);
+
+// Ajouter ou retirer un favori
+const toggleFavorite = async (projectName: string) => {
+    setFavLoading(true);
+    const isFav = favorites.some(f => f.project === projectName);
+    try {
+        if (isFav) {
+            await fetch("/api/favorites", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user, project: projectName })
+            });
+        } else {
+            await fetch("/api/favorites", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user, project: projectName })
+            });
+        }
+        // Refresh
+        const res = await fetch("/api/favorites");
+        const data = await res.json();
+        setFavorites(data.filter((f: Favorite) => f.user === user));
+    } finally {
+        setFavLoading(false);
+    }
+};
 
 export type ProjectItemProps = {
     id: number | string;
@@ -81,7 +136,7 @@ export function ProjectsItems({ projects }: { projects: ProjectItemProps[] }) {
             });
             const data = await res.json();
             if (!data.ok) throw new Error(data.error || "Erreur lors de la création");
-            
+
             // Recharger et surveiller
             await fetchRepoCodespaces(fullName);
         } catch (err) {
@@ -116,6 +171,7 @@ export function ProjectsItems({ projects }: { projects: ProjectItemProps[] }) {
                 const error = errorMap[fullName] || "";
                 const creating = creatingMap[fullName] || false;
                 const createError = createErrorMap[fullName] || "";
+                const isFav = favorites.some(f => f.project === fullName);
 
                 return (
                     <li key={project.id} className="repo-card" style={{ marginBottom: 24, padding: 20, borderRadius: 12, boxShadow: '0 2px 8px #0001', background: '#fff' }}>
@@ -136,6 +192,17 @@ export function ProjectsItems({ projects }: { projects: ProjectItemProps[] }) {
                                         onClick={() => handleCreateCodespace(Number(project.id), fullName)}
                                     >
                                         {creating ? "Création..." : "Nouveau Codespace"}
+                                    </button>
+                                )}
+                                {/* Bouton Favori */}
+                                {fullName && (
+                                    <button
+                                        className={isFav ? "button-secondary" : "button-primary"}
+                                        style={{ minWidth: 80, background: isFav ? '#ffe082' : undefined, color: isFav ? '#b8860b' : undefined }}
+                                        disabled={favLoading}
+                                        onClick={() => toggleFavorite(fullName)}
+                                    >
+                                        {isFav ? "★ Favori" : "☆ Favori"}
                                     </button>
                                 )}
                             </div>
@@ -159,7 +226,7 @@ export function ProjectsItems({ projects }: { projects: ProjectItemProps[] }) {
                                     {codespaces.map((cs) => {
                                         const isStable = cs.state === "Available";
                                         const isOff = cs.state === "Shutdown";
-                                        
+
                                         return (
                                             <div key={cs.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: '#f9fafb', borderRadius: 8, border: '1px solid #f0f0f0' }}>
                                                 <div>
@@ -176,29 +243,29 @@ export function ProjectsItems({ projects }: { projects: ProjectItemProps[] }) {
                                                         </a>
                                                     )}
                                                     {isStable && (
-                                                        <button 
+                                                        <button
                                                             onClick={() => handleAction(fullName, cs.name, 'stop')}
                                                             disabled={actionLoading[`${fullName}-${cs.name}-stop`]}
-                                                            className="button-secondary" 
+                                                            className="button-secondary"
                                                             style={{ padding: '4px 10px', fontSize: 12 }}
                                                         >
                                                             Arrêter
                                                         </button>
                                                     )}
                                                     {isOff && (
-                                                        <button 
+                                                        <button
                                                             onClick={() => handleAction(fullName, cs.name, 'start')}
                                                             disabled={actionLoading[`${fullName}-${cs.name}-start`]}
-                                                            className="button-primary" 
+                                                            className="button-primary"
                                                             style={{ padding: '4px 10px', fontSize: 12, background: '#444' }}
                                                         >
                                                             Démarrer
                                                         </button>
                                                     )}
-                                                    <button 
-                                                        onClick={() => { if(confirm('Supprimer ce Codespace ?')) handleAction(fullName, cs.name, 'delete') }}
+                                                    <button
+                                                        onClick={() => { if (confirm('Supprimer ce Codespace ?')) handleAction(fullName, cs.name, 'delete') }}
                                                         disabled={actionLoading[`${fullName}-${cs.name}-delete`]}
-                                                        className="button-secondary" 
+                                                        className="button-secondary"
                                                         style={{ padding: '4px 10px', fontSize: 12, color: '#c00' }}
                                                     >
                                                         Supprimer
