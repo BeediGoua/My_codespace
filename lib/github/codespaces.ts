@@ -45,8 +45,7 @@ export async function fetchRepoCodespaces(
 // Crée un Codespace via l'API GitHub
 export async function createRepoCodespace(
   accessToken: string,
-  owner: string,
-  repo: string,
+  repositoryId: number,
   params: {
     location?: string;
     machine_type?: string;
@@ -59,8 +58,11 @@ export async function createRepoCodespace(
 ): Promise<Codespace> {
   return await githubPost<Codespace>({
     accessToken,
-    path: `/repos/${owner}/${repo}/codespaces`,
-    body: params,
+    path: `/user/codespaces`,
+    body: {
+      repository_id: repositoryId,
+      ...params,
+    },
   });
 }
 
@@ -72,5 +74,49 @@ export async function getCodespaceByName(
   return await githubGet<Codespace>({
     accessToken,
     path: `/user/codespaces/${name}`,
+  });
+}
+
+/**
+ * Arrête un Codespace
+ */
+export async function stopCodespace(
+  accessToken: string,
+  name: string
+): Promise<Codespace> {
+  return await githubPost<Codespace>({
+    accessToken,
+    path: `/user/codespaces/${name}/stop`,
+    body: {},
+  });
+}
+
+/**
+ * Démarre un Codespace
+ */
+export async function startCodespace(
+  accessToken: string,
+  name: string
+): Promise<Codespace> {
+  return await githubPost<Codespace>({
+    accessToken,
+    path: `/user/codespaces/${name}/start`,
+    body: {},
+  });
+}
+
+/**
+ * Supprime un Codespace
+ */
+export async function deleteRepoCodespace(
+  accessToken: string,
+  name: string
+): Promise<void> {
+  await fetch(`https://api.github.com/user/codespaces/${name}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: "application/vnd.github.v3+json",
+    },
   });
 }

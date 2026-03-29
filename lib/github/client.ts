@@ -1,3 +1,11 @@
+class GitHubError extends Error {
+    status: number;
+    constructor(message: string, status: number) {
+        super(message);
+        this.status = status;
+        this.name = "GitHubError";
+    }
+}
 
 type GitHubPostOptions = {
     accessToken: string;
@@ -30,10 +38,7 @@ export async function githubPost<T>({ accessToken, path, body }: GitHubPostOptio
         } catch {
             // ignore
         }
-        const error = new Error(errorMsg);
-        // @ts-expect-error: Needed to attach HTTP status code for error handling
-        error.status = errorCode;
-        throw error;
+        throw new GitHubError(errorMsg, errorCode);
     }
     return response.json();
 }
@@ -53,7 +58,7 @@ export async function githubGet<T>({ accessToken, path }: GitHubRequestOptions):
     });
 
     if (!response.ok) {
-        throw new Error("Echec de requete GitHub.");
+        throw new GitHubError("Echec de requete GitHub.", response.status);
     }
 
     return response.json();

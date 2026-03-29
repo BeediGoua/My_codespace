@@ -4,8 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAccessToken } from "@/lib/auth/session";
 import { createRepoCodespace } from "@/lib/github/codespaces";
 
-const TEST_MODE = process.env.TEST_MODE === "1";
-
 export async function POST(req: NextRequest) {
   let accessToken: string;
 
@@ -34,41 +32,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { owner, repo, ...params } = body;
+  const { repositoryId, ...params } = body;
 
-  if (!owner || !repo || typeof owner !== "string" || typeof repo !== "string") {
+  if (!repositoryId || (typeof repositoryId !== "number" && typeof repositoryId !== "string")) {
     return NextResponse.json(
-      { ok: false, error: "owner et repo requis", code: 400 },
+      { ok: false, error: "repositoryId requis", code: 400 },
       { status: 400 }
     );
   }
 
-  if (TEST_MODE) {
-    return NextResponse.json(
-      {
-        ok: true,
-        data: {
-          id: "cs-mock-123",
-          display_name:
-            typeof params.display_name === "string"
-              ? params.display_name
-              : "Codespace de test",
-          name: "codespace-mock",
-          state: "Creating",
-          web_url: `https://github.com/codespaces/test-user/${repo}`,
-          repository: {
-            name: repo,
-            full_name: `${owner}/${repo}`,
-            owner: { login: owner },
-          },
-        },
-      },
-      { status: 201 }
-    );
-  }
+  const repoIdNum = typeof repositoryId === "string" ? parseInt(repositoryId, 10) : repositoryId;
 
   try {
-    const codespace = await createRepoCodespace(accessToken, owner, repo, {
+    const codespace = await createRepoCodespace(accessToken, repoIdNum, {
       location:
         typeof params.location === "string" ? params.location : undefined,
       machine_type:
@@ -107,7 +83,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    console.error(`[API Codespaces][create] ${owner}/${repo} :`, message);
+    console.error(`[API Codespaces][create] ${repositoryId} :`, message);
 
     return NextResponse.json(
       { ok: false, error: message, code: status },

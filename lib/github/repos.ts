@@ -1,4 +1,6 @@
-import { githubPost } from "./client";
+import { githubGet, githubPost } from "./client";
+import type { GitHubRepo } from "./types";
+
 export async function createGitHubRepo(accessToken: string, { name, description, privateRepo }: { name: string; description?: string; privateRepo?: boolean; }) {
     try {
         const body = {
@@ -16,8 +18,6 @@ export async function createGitHubRepo(accessToken: string, { name, description,
         throw new Error("Impossible de creer le repository GitHub.");
     }
 }
-import { githubGet } from "./client";
-import type { GitHubRepo } from "./types";
 
 export async function fetchGitHubRepos(accessToken: string): Promise<GitHubRepo[]> {
     try {

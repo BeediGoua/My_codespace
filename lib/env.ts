@@ -27,6 +27,12 @@ export function getOAuthEnv(requireSecret = false): OAuthEnv | OAuthEnvWithSecre
   const appUrl = getFirstDefined(["NEXT_PUBLIC_APP_URL", "APP_URL"]);
 
   if (!clientId || !redirectUri || !appUrl || (requireSecret && !clientSecret)) {
+    const missing = [];
+    if (!clientId) missing.push("CLIENT_ID");
+    if (!redirectUri) missing.push("REDIRECT_URI");
+    if (!appUrl) missing.push("APP_URL");
+    if (requireSecret && !clientSecret) missing.push("CLIENT_SECRET");
+    console.error("[getOAuthEnv] Variables manquantes:", missing.join(", "));
     throw new Error("Variables d'environnement manquantes.");
   }
 

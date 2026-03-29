@@ -19,14 +19,14 @@ export async function GET() {
   const githubAuthUrl = new URL("https://github.com/login/oauth/authorize");
   githubAuthUrl.searchParams.set("client_id", clientId);
   githubAuthUrl.searchParams.set("redirect_uri", redirectUri);
-  githubAuthUrl.searchParams.set("scope", "read:user user:email");
+  githubAuthUrl.searchParams.set("scope", "read:user user:email codespace");
   githubAuthUrl.searchParams.set("state", state);
 
   const response = NextResponse.redirect(githubAuthUrl.toString());
 
   response.cookies.set("github_oauth_state", state, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
     maxAge: 60 * 10,
