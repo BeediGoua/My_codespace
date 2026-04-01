@@ -242,7 +242,7 @@ export function ProjectsItems({ projects }: { projects: ProjectItemProps[] }) {
                                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
                                                     {isStable && cs.web_url && (
                                                         <a href={`/workspace/${cs.name}`} className="button-primary" style={{ flex: 1, minWidth: '120px', padding: '14px 16px', fontSize: 16, textAlign: 'center', borderRadius: 8 }}>
-                                                            💻 Ouvrir l'éditeur
+                                                            💻 Ouvrir l&apos;éditeur
                                                         </a>
                                                     )}
                                                     {isStable && (

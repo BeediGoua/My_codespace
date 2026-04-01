@@ -5,11 +5,9 @@ import { getOAuthEnv } from "@/lib/env";
 export async function GET(request: NextRequest) {
   let clientId: string;
   let clientSecret: string;
-  let redirectUri: string;
-  let appUrl: string;
 
   try {
-    ({ clientId, clientSecret, redirectUri, appUrl } = getOAuthEnv(true));
+    ({ clientId, clientSecret } = getOAuthEnv(true));
   } catch {
     return new NextResponse("Variables d'environnement manquantes.", {
       status: 500,
@@ -17,6 +15,9 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
+  const origin = new URL(request.url).origin;
+  const redirectUri =
+    request.cookies.get("github_oauth_redirect_uri")?.value || `${origin}/api/auth/github/callback`;
   const code = searchParams.get("code");
   const state = searchParams.get("state");
   const storedState = request.cookies.get("github_oauth_state")?.value;
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const response = NextResponse.redirect(`${appUrl}/dashboard`);
+  const response = NextResponse.redirect(`${origin}/dashboard`);
 
   response.cookies.set("github_access_token", tokenData.access_token, {
     httpOnly: true,
@@ -64,6 +65,7 @@ export async function GET(request: NextRequest) {
   });
 
   response.cookies.delete("github_oauth_state");
+  response.cookies.delete("github_oauth_redirect_uri");
 
   return response;
 }

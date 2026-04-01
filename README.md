@@ -55,6 +55,8 @@ cd <repo>
 npm install
 cp .env.local.example .env.local
 # Renseigne tes secrets GitHub dans .env.local
+npm run lint
+npm run build
 npm run dev
 ```
 
